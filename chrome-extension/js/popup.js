@@ -1,11 +1,12 @@
-// variables
+// popup.js
 let apiURL = "https://x1zi1laze8.execute-api.us-west-2.amazonaws.com/v1/";
 
 // listen to our translate button for on click
 translateButton.addEventListener("click", async () => {
   // we need to specify what tab we're looking at
-  console.log("function translateButton click");
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  // execute out getHighlighted text within the tab we are currently using
   chrome.scripting.executeScript(
     {
       target: { tabId: tab.id },
@@ -25,6 +26,8 @@ function getHighlightedText() {
   return selectedText;
 }
 
+// this wraps our raw text back with a prosody tag, this allows of ssml text for polly
+// which allows us to change the speaking rate
 function ssmlWrapper(text, speed) {
   return `<prosody rate="${speed}">${text}</prosody>`;
 }
@@ -37,9 +40,10 @@ function postAPI(text) {
       // create data for POST payload
       // text contains our highlighted text, voice contains the speaker we would like from polly
       let data = { text: ssmlText, voice: voiceData.voice };
-      console.log("data", data); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      
+      console.log("🚀 ~ file: popup.js ~ line 44 ~ chrome.storage.sync.get ~ data", data);
 
-      // make post request to our api
+      // make post request to our api containing our data
       fetch(apiURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -47,18 +51,24 @@ function postAPI(text) {
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log("response:", data);
+          console.log("🚀 ~ file: popup.js ~ line 53 ~ .then ~ data", data);
           // response comes back with a url of our polly translated text-to-mp3
-          if (data.s3url) {
-            console.log("Request complete! response:", data.s3url);
-            updateSource(data.s3url);
-          }
+          // set our audioUrl so we can reference it later
+          chrome.storage.sync.set({ audioUrl: data.s3url }, () => {
+            // force update our audio source to our new audio url
+            updateAudioSource();
+          });
         });
     });
   });
 }
 
 // update our audio player to refer to our new translated audio
-function updateSource(s3url) {
-  document.getElementById("audioPlayer").src = s3url;
+function updateAudioSource() {
+  chrome.storage.sync.get("audioUrl", (data) => {
+    document.getElementById("audioPlayer").src = data.audioUrl;
+  });
 }
+
+// everytime popup load we get the last audioSource loaded into player
+updateAudioSource();
