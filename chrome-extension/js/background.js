@@ -3,7 +3,8 @@
 // default voice and speed options
 let voice = "Matthew";
 let speed = "medium";
-let audioUrl = "";
+let audioUrl =
+  "https://mimid-polly-bucket.s3.us-west-2.amazonaws.com/mimidIntro.mp3";
 
 // when first installing this extension set some varibles in storage to be
 // accessable at the user level

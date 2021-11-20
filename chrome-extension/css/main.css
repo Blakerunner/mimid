@@ -12,12 +12,13 @@ button.current {
 }
 
 #translateButton {
-  background-image: url(../images/logo48-transparent.png);
+  background-image: url(../images/logoBlack-transparent.png);
+  background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   background-color: #f1f3f4;
   width: 18.7rem;
-  transition: 1s;
+  transition: 0.7s;
 }
 
 #audioPlayer {
@@ -26,6 +27,18 @@ button.current {
 }
 
 #translateButton:hover {
+  background-image: url(../images/logoWhite-transparent.png);
+  background-size: contain;
   background-color: #221f1f;
   cursor: pointer;
+}
+
+.content {
+  max-width: 50rem;
+  margin: auto;
+}
+
+#mimidLogo {
+  display: block;
+  margin: auto;
 }

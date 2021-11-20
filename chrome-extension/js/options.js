@@ -5,15 +5,17 @@ let speedOptionsDiv = document.getElementById("speedOptionsDiv");
 
 let selectedClassName = "current";
 const voiceOptions = [
+  "Matthew",
   "Olivia",
-  "Russell",
+  "Amy",
   "Emma",
   "Brian",
+  "Aria",
   "Joanna",
   "Kendra",
   "Kimberly",
-  "Matthew",
-  "Geraint",
+  "Salli",
+  "Joey",
 ];
 const speedOptions = ["x-slow", "slow", "medium", "fast", "x-fast"];
 
