@@ -26,40 +26,32 @@ function getHighlightedText() {
   return selectedText;
 }
 
-// this wraps our raw text back with a prosody tag, this allows of ssml text for polly
-// which allows us to change the speaking rate
-function ssmlWrapper(text, speed) {
-  return `<prosody rate="${speed}">${text}</prosody>`;
-}
-
 // handles post request to api gateway
 function postAPI(text) {
-  chrome.storage.sync.get("voice", (voiceData) => {
-    chrome.storage.sync.get("speed", (speedData) => {
-      let ssmlText = ssmlWrapper(text, speedData.speed);
-      // create data for POST payload
-      // text contains our highlighted text, voice contains the speaker we would like from polly
-      let data = { text: ssmlText, voice: voiceData.voice };
-      
-      console.log("🚀 ~ file: popup.js ~ line 44 ~ chrome.storage.sync.get ~ data", data);
+  chrome.storage.sync.get(null, (storageData) => {
+    // create data for POST payload
+    // text contains our highlighted text, voice contains the speaker we would like from polly
+    let bodyData = {
+      text: text,
+      voice: storageData.voice,
+      speed: storageData.speed,
+    };
 
-      // make post request to our api containing our data
-      fetch(apiURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("🚀 ~ file: popup.js ~ line 53 ~ .then ~ data", data);
-          // response comes back with a url of our polly translated text-to-mp3
-          // set our audioUrl so we can reference it later
-          chrome.storage.sync.set({ audioUrl: data.s3url }, () => {
-            // force update our audio source to our new audio url
-            updateAudioSource();
-          });
+    // make post request to our api containing our data
+    fetch(apiURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bodyData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // response comes back with a url of our polly translated text-to-mp3
+        // set our audioUrl so we can reference it later
+        chrome.storage.sync.set({ audioUrl: data.s3url }, () => {
+          // force update our audio source to our new audio url
+          updateAudioSource();
         });
-    });
+      });
   });
 }
 
