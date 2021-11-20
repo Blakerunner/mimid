@@ -1,12 +1,31 @@
 button {
-  height: 30px;
-  width: 60px;
+  height: 3rem;
+  width: 6rem;
   outline: none;
-  margin: 10px;
+  margin: 0.7rem;
   border: none;
-  border-radius: 2px;
+  border-radius: 0.5rem;
 }
 
 button.current {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px black;
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.3rem #221f1f;
+}
+
+#translateButton {
+  background-image: url(../images/logo48-transparent.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #f1f3f4;
+  width: 18.7rem;
+  transition: 1s;
+}
+
+#audioPlayer {
+  margin-left: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+
+#translateButton:hover {
+  background-color: #221f1f;
+  cursor: pointer;
 }

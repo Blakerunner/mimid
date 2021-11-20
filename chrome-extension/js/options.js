@@ -1,5 +1,8 @@
+// options.js
+
 let voiceOptionsDiv = document.getElementById("voiceOptionsDiv");
 let speedOptionsDiv = document.getElementById("speedOptionsDiv");
+
 let selectedClassName = "current";
 const voiceOptions = [
   "Olivia",
@@ -28,7 +31,7 @@ function handleVoiceButtonClick(event) {
   // Mark the button as selected
   let voice = event.target.dataset.voice;
   event.target.classList.add(selectedClassName);
-  chrome.storage.sync.set({ voice });
+  chrome.storage.sync.set({ voice: voice });
 }
 
 function handleSpeedButtonClick(event) {
@@ -43,7 +46,7 @@ function handleSpeedButtonClick(event) {
   // Mark the button as selected
   let speed = event.target.dataset.speed;
   event.target.classList.add(selectedClassName);
-  chrome.storage.sync.set({ speed });
+  chrome.storage.sync.set({ speed: speed });
 }
 
 // Add a button to the page for each supplied color
