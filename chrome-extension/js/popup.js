@@ -1,54 +1,53 @@
 // variables
-let apiURL = "";
-let urlTrex =
-  "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3";
-let urlS3 =
-  "https://mimid-polly-bucket.s3.us-west-2.amazonaws.com/file_example_MP3_700KB.mp3";
-let text = "";
+let apiURL = "https://x1zi1laze8.execute-api.us-west-2.amazonaws.com/v1/";
 
 // listen to our translate button for on click
 translateButton.addEventListener("click", async () => {
-
   // we need to specify what tab we're looking at
   console.log("function translateButton click");
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-  // execute script to a specific tab, target has to be our current tab or we wont be able to specify what document we want our text from
-  await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    function: getHighlightedText,
-  });
-  
-  // after we get out text back, post the text to the api endpoint
-  //postAPI(text);
-  updateSource(urlTrex);
+  chrome.scripting.executeScript(
+    {
+      target: { tabId: tab.id },
+      func: getHighlightedText,
+    },
+    (text) => {
+      // after we get out text back, post the text to the api endpoint
+      postAPI(text[0].result);
+    }
+  );
 });
 
 // set our text to the current highlighted text
 function getHighlightedText() {
-  console.log("function getHighlightedText");
-  text = document.getSelection().toString();
-  console.log("selected:", text);
+  let selectedText = document.getSelection().toString();
+  console.log(`Selected Text:\n`, selectedText);
+  return selectedText;
 }
 
 // handles post request to api gateway
-function postAPI() {
-  // get the voice we want to the audio to be translated into
-  voice = chrome.storage.sync.get("voice");
+function postAPI(text) {
+  chrome.storage.sync.get("voice", (voice) => {
+    // create data for POST payload
+    // text contains our highlighted text, voice contains the speaker we would like from polly
+    let data = { text: text, voice: voice.voice };
+    console.log("data", data); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-  // create data for POST payload
-  // text contains our highlighted text, voice contains the speaker we would like from polly
-  let data = { text, voice };
-
-  // make post request to our api
-  fetch(apiURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  }).then((res) => {
-    // response comes back with a url of our polly translated text-to-mp3
-    console.log("Request complete! response:", res);
-    updateSource(res.s3url);
+    // make post request to our api
+    fetch(apiURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("response:", data);
+        // response comes back with a url of our polly translated text-to-mp3
+        if (data.s3url) {
+          console.log("Request complete! response:", data.s3url);
+          updateSource(data.s3url);
+        }
+      });
   });
 }
 
