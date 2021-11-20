@@ -28,7 +28,7 @@ function handleVoiceButtonClick(event) {
   // Mark the button as selected
   let voice = event.target.dataset.voice;
   event.target.classList.add(selectedClassName);
-  chrome.storage.sync.set({ voice });
+  chrome.storage.sync.set({data.voice});
 }
 
 function handleSpeedButtonClick(event) {
@@ -48,7 +48,7 @@ function handleSpeedButtonClick(event) {
 
 // Add a button to the page for each supplied color
 function constructVoiceOptions(voiceOptions) {
-  chrome.storage.sync.get("voice", (data) => {
+  chrome.storage.sync.get("data", (data) => {
     let currentVoice = data.voice;
     // For each color we were provided…
     for (let voice of voiceOptions) {
@@ -71,7 +71,7 @@ function constructVoiceOptions(voiceOptions) {
 
 // Add a button for each speedOption
 function constructSpeedOptions(speedOptions) {
-  chrome.storage.sync.get("speed", (data) => {
+  chrome.storage.sync.get("data", (data) => {
     let currentSpeed = data.speed;
     // For each speed of our speed options
     for (let speed of speedOptions) {
