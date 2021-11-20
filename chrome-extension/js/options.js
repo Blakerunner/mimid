@@ -1,10 +1,22 @@
-let page = document.getElementById("buttonDiv");
+let voiceOptionsDiv = document.getElementById("voiceOptionsDiv");
+let speedOptionsDiv = document.getElementById("speedOptionsDiv");
 let selectedClassName = "current";
-const presetButtonColors = ["#3aa757", "#e8453c", "#f9bb2d", "#4688f1"];
+const voiceOptions = [
+  "Olivia",
+  "Russell",
+  "Emma",
+  "Brian",
+  "Joanna",
+  "Kendra",
+  "Kimberly",
+  "Matthew",
+  "Geraint",
+];
+const speedOptions = ["x-slow", "slow", "medium", "fast", "x-fast"];
 
 // Reacts to a button click by marking the selected button and saving
 // the selection
-function handleButtonClick(event) {
+function handleVoiceButtonClick(event) {
   // Remove styling from the previously selected color
   let current = event.target.parentElement.querySelector(
     `.${selectedClassName}`
@@ -14,33 +26,71 @@ function handleButtonClick(event) {
   }
 
   // Mark the button as selected
-  let color = event.target.dataset.color;
+  let voice = event.target.dataset.voice;
   event.target.classList.add(selectedClassName);
-  chrome.storage.sync.set({ color });
+  chrome.storage.sync.set({ voice });
+}
+
+function handleSpeedButtonClick(event) {
+  // Remove styling from the previously selected color
+  let current = event.target.parentElement.querySelector(
+    `.${selectedClassName}`
+  );
+  if (current && current !== event.target) {
+    current.classList.remove(selectedClassName);
+  }
+
+  // Mark the button as selected
+  let speed = event.target.dataset.speed;
+  event.target.classList.add(selectedClassName);
+  chrome.storage.sync.set({ speed });
 }
 
 // Add a button to the page for each supplied color
-function constructOptions(buttonColors) {
-  chrome.storage.sync.get("color", (data) => {
-    let currentColor = data.color;
+function constructVoiceOptions(voiceOptions) {
+  chrome.storage.sync.get("voice", (data) => {
+    let currentVoice = data.voice;
     // For each color we were provided…
-    for (let buttonColor of buttonColors) {
+    for (let voice of voiceOptions) {
       // …create a button with that color…
       let button = document.createElement("button");
-      button.dataset.color = buttonColor;
-      button.style.backgroundColor = buttonColor;
+      button.dataset.voice = voice;
+      button.innerHTML = voice;
 
       // …mark the currently selected color…
-      if (buttonColor === currentColor) {
+      if (voice === currentVoice) {
         button.classList.add(selectedClassName);
       }
 
       // …and register a listener for when that button is clicked
-      button.addEventListener("click", handleButtonClick);
-      page.appendChild(button);
+      button.addEventListener("click", handleVoiceButtonClick);
+      voiceOptionsDiv.appendChild(button);
     }
   });
 }
 
-// Initialize the page by constructing the color options
-constructOptions(presetButtonColors);
+// Add a button for each speedOption
+function constructSpeedOptions(speedOptions) {
+  chrome.storage.sync.get("speed", (data) => {
+    let currentSpeed = data.speed;
+    // For each speed of our speed options
+    for (let speed of speedOptions) {
+      // create a button with that speed
+      let button = document.createElement("button");
+      button.dataset.speed = speed;
+      button.innerHTML = speed;
+
+      if (speed === currentSpeed) {
+        button.classList.add(selectedClassName);
+      }
+
+      // …and register a listener for when that button is clicked
+      button.addEventListener("click", handleSpeedButtonClick);
+      speedOptionsDiv.appendChild(button);
+    }
+  });
+}
+
+// Initialize the page divs by constructing the voice and speed options
+constructVoiceOptions(voiceOptions);
+constructSpeedOptions(speedOptions);
